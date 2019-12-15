@@ -44,10 +44,6 @@ class HomeScreen extends StatelessWidget {
 
   /// asks for permissions if not given, returns whether or not permissions are given
   Future<bool> _checkAndAskPermissions() async {
-    Future<bool> allPermissionsGranted() async =>
-        await Nearby().checkExternalStoragePermission() &&
-        await Nearby().checkLocationPermission();
-
     if (await allPermissionsGranted()) {
       return true;
     } else {
@@ -57,6 +53,10 @@ class HomeScreen extends StatelessWidget {
 
     return await allPermissionsGranted();
   }
+
+  Future<bool> allPermissionsGranted() async =>
+      await Nearby().checkExternalStoragePermission() &&
+      await Nearby().checkLocationPermission();
 }
 
 class UserNameWidget extends StatelessWidget {

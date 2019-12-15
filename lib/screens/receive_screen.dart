@@ -30,6 +30,31 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
         Strategy.P2P_POINT_TO_POINT,
         onConnectionInitiated: (String id, ConnectionInfo info) {
           // Called whenever a discoverer requests connection
+          if (info.isIncomingConnection) {
+            showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("${info.endpointName} wants to share files"),
+                  actions: <Widget>[
+                    RaisedButton(
+                      child: Text("Deny"),
+                      onPressed: () {
+                        Router.navigator.pop();
+                      },
+                    ),
+                    RaisedButton(
+                      child: Text("Allow"),
+                      onPressed: () {
+                        Router.navigator.pushReplacementNamed(Router.transfer);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         },
         onConnectionResult: (String id, Status status) {
           // Called when connection is accepted/rejected

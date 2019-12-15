@@ -29,6 +29,7 @@ dev_dependencies:
     sdk: flutter
   nearby_connections: ^1.0.2+1
   provider: ^3.2.0
+  file_picker: ^1.4.3+1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

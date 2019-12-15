@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_file_sharer/providers/endpoints.dart';
+import 'package:flutter_file_sharer/providers/files.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
 import 'package:flutter_file_sharer/routes.dart';
 import 'package:flutter_file_sharer/screens/home_screen.dart';
@@ -22,6 +24,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(
           value: User("User_" + Random().nextInt(1000).toString()),
+        ),
+        ChangeNotifierProvider.value(
+          value: Endpoints(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Files(),
         ),
       ],
       child: MaterialApp(
