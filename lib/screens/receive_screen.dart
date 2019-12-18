@@ -90,24 +90,23 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!advertising) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    //advertising is turned on successfully
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          CircleAvatar(
-            backgroundColor: Colors.green[700],
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+    return Scaffold(
+      body: !advertising
+          ? Center(child: CircularProgressIndicator())
+          : Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundColor: Colors.green[700],
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  Text("Waiting for a sender.."),
+                ],
+              ),
             ),
-          ),
-          Text("Waiting for a sender.."),
-        ],
-      ),
     );
   }
 }

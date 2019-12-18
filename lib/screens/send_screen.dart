@@ -69,8 +69,8 @@ class _SendScreenState extends State<SendScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Wrap(
-          alignment: WrapAlignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Consumer<Files>(
               builder: (_, files, __) {
@@ -88,12 +88,18 @@ class _SendScreenState extends State<SendScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        label: Text("Done"),
-        icon: Icon(Icons.send),
-        onPressed: () {
-          //open list of advertisers to send files to..
-          showAdvertisersDialog();
+      floatingActionButton: Consumer<Files>(
+        builder: (_, files, __) {
+          return FloatingActionButton.extended(
+            label: Text("Proceed"),
+            icon: Icon(Icons.send),
+            onPressed: files.files.length < 1
+                ? null
+                : () {
+                    //open list of advertisers to send files to..
+                    showAdvertisersDialog();
+                  },
+          );
         },
       ),
     );
@@ -104,48 +110,62 @@ class _SendScreenState extends State<SendScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Some Error occurred :("),
+          title: Text("Receivers Near You"),
           content: Center(
             child: Consumer<Endpoints>(
               builder: (_, endpoints, __) {
-                return ListView.builder(
-                  itemCount: endpoints.externalUsers.length,
-                  itemBuilder: (_, i) {
-                    return Padding(
-                      padding: EdgeInsets.all(6),
-                      child: FlatButton(
-                        child: Text("${endpoints.externalUsers[i].nickName}"),
-                        onPressed: () {
-                          // request connection to advertiser
-                          Nearby().requestConnection(
-                              Provider.of<User>(context, listen: false)
-                                  .nickName,
-                              endpoints.externalUsers[i].endpointId,
-                              onConnectionInitiated: (id, info) {
-                            if (!info.isIncomingConnection) {
-                              Nearby().acceptConnection(id,
-                                  onPayLoadRecieved: (endid, bytes) {
-                                // called whenever a payload is recieved.
-                              }, onPayloadTransferUpdate:
-                                      (endid, payloadTransferUpdate) {
-                                // gives status of a payload
-                                // e.g success/failure/in_progress
-                                // bytes transferred and total bytes etc
-                              });
-                            }
-                          }, onConnectionResult: (id, status) {
-                            //send files to user..
-                            Router.navigator
-                                .pushReplacementNamed(Router.transfer);
-                            startTransfer(id);
-                          }, onDisconnected: (id) {});
-                        },
-                      ),
-                    );
-                  },
-                );
+                if (endpoints.externalUsers.length < 1)
+                  return CircularProgressIndicator();
+
+                return EndpointListView(endpoints);
               },
             ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class EndpointListView extends StatefulWidget {
+  final Endpoints endpoints;
+  EndpointListView(
+    this.endpoints, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _EndpointListViewState createState() => _EndpointListViewState();
+}
+
+class _EndpointListViewState extends State<EndpointListView> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: widget.endpoints.externalUsers.length,
+      itemBuilder: (_, i) {
+        return Padding(
+          padding: EdgeInsets.all(6),
+          child: FlatButton(
+            child: Text("${widget.endpoints.externalUsers[i].nickName}"),
+            onPressed: () {
+              // request connection to advertiser
+              Nearby().requestConnection(
+                  Provider.of<User>(context, listen: false).nickName,
+                  widget.endpoints.externalUsers[i].endpointId,
+                  onConnectionInitiated: (id, info) {
+                if (!info.isIncomingConnection) {
+                  Nearby().acceptConnection(id,
+                      onPayLoadRecieved: (endid, bytes) {},
+                      onPayloadTransferUpdate:
+                          (endid, payloadTransferUpdate) {});
+                }
+              }, onConnectionResult: (id, status) {
+                //send files to user..
+                Router.navigator.pushReplacementNamed(Router.transfer);
+                startTransfer(id);
+              }, onDisconnected: (id) {});
+            },
           ),
         );
       },
@@ -160,7 +180,7 @@ class _SendScreenState extends State<SendScreen> {
       Nearby().sendBytesPayload(
           id,
           Uint8List.fromList(
-              "FILE:::${payloadId}:::${file.path.split('/').last}".codeUnits));
+              "FILE:::$payloadId:::${file.path.split('/').last}".codeUnits));
     }
   }
 }

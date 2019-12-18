@@ -6,7 +6,7 @@ class Files extends ChangeNotifier {
   List<File> files = [];
 
   void add(List<File> fs) {
-    files = fs;
+    files = fs ?? [];
     notifyListeners();
   }
 }

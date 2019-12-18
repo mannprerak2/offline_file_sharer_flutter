@@ -7,25 +7,27 @@ import 'package:provider/provider.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          UserNameWidget(),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              RaisedButton(
-                child: Text("Send"),
-                onPressed: onClickSend,
-              ),
-              RaisedButton(
-                child: Text("Receive"),
-                onPressed: onClickReceive,
-              ),
-            ],
-          ),
-        ],
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            UserNameWidget(),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                RaisedButton(
+                  child: Text("Send"),
+                  onPressed: onClickSend,
+                ),
+                RaisedButton(
+                  child: Text("Receive"),
+                  onPressed: onClickReceive,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -47,8 +49,7 @@ class HomeScreen extends StatelessWidget {
     if (await allPermissionsGranted()) {
       return true;
     } else {
-      await Nearby().askLocationPermission();
-      await Nearby().askExternalStoragePermission();
+      Nearby().askLocationAndExternalStoragePermission();
     }
 
     return await allPermissionsGranted();
