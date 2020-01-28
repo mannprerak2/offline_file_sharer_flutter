@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
-import 'package:flutter_file_sharer/routes.dart';
+import 'package:flutter_file_sharer/global.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:provider/provider.dart';
 
@@ -90,7 +90,7 @@ class UserNameWidget extends StatelessWidget {
                   ),
                   onPressed: () {
                     if (t.text.trim().isNotEmpty) {
-                      Provider.of<User>(context, listen: false).nickName =
+                      getP<User>().nickName =
                           t.text.trim();
                       Router.navigator.pop(); // pop alertdialog
                     }

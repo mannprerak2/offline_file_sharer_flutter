@@ -12,6 +12,7 @@ class Endpoints extends ChangeNotifier {
     externalUsers.removeWhere((e) {
       return e.endpointId == id;
     });
+    notifyListeners();
   }
 
   void clear() {

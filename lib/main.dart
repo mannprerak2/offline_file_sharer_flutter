@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_sharer/providers/endpoints.dart';
 import 'package:flutter_file_sharer/providers/files.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
-import 'package:flutter_file_sharer/routes.dart';
+import 'package:flutter_file_sharer/global.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());

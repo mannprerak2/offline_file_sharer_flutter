@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_file_sharer/routes.dart';
+import 'package:flutter_file_sharer/global.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

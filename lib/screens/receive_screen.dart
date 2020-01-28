@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
-import 'package:flutter_file_sharer/routes.dart';
+import 'package:flutter_file_sharer/global.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:provider/provider.dart';
 
@@ -11,9 +11,11 @@ class ReceiveScreen extends StatefulWidget {
 
 class _ReceiveScreenState extends State<ReceiveScreen> {
   bool advertising = false;
+
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => startAdvertising());
+    startAdvertising();
+    // WidgetsBinding.instance.addPostFrameCallback((_) => );
     super.initState();
   }
 
@@ -26,7 +28,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
   void startAdvertising() async {
     try {
       advertising = await Nearby().startAdvertising(
-        Provider.of<User>(context, listen: false).nickName,
+        getP<User>().nickName,
         Strategy.P2P_POINT_TO_POINT,
         onConnectionInitiated: (String id, ConnectionInfo info) {
           // Called whenever a discoverer requests connection
@@ -52,8 +54,9 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                             onPayloadTransferUpdate:
                                 (endid, payloadTransferUpdate) {});
                         // connection was already accepted by sender so its
-                        // safe to directly go to transfer screen
-                        Router.navigator.pushReplacementNamed(Router.transfer);
+                        // safe to directly go to receiver_transfer_screen
+                        Router.navigator
+                            .pushReplacementNamed(Router.receiverTransfer);
                       },
                     ),
                   ],
@@ -68,6 +71,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
         onDisconnected: (String id) {
           // Callled whenever a discoverer disconnects from advertiser
         },
+        serviceId: serviceId,
       );
       setState(() {});
     } catch (e) {
@@ -97,22 +101,15 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: !advertising
-          ? Center(child: CircularProgressIndicator())
-          : Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  CircleAvatar(
-                    backgroundColor: Colors.green[700],
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                  Text("Waiting for a sender.."),
-                ],
-              ),
-            ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            Text(advertising ? "Initialising" : "Waiting for a sender.."),
+          ],
+        ),
+      ),
     );
   }
 }

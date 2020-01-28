@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_sharer/providers/endpoints.dart';
 import 'package:flutter_file_sharer/providers/files.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
-import 'package:flutter_file_sharer/routes.dart';
+import 'package:flutter_file_sharer/global.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,7 +18,8 @@ class _SendScreenState extends State<SendScreen> {
   @override
   void initState() {
     // start discovery
-    WidgetsBinding.instance.addPostFrameCallback((_) => startDiscovery());
+    startDiscovery();
+    // WidgetsBinding.instance.addPostFrameCallback((_) => );
     super.initState();
   }
 
@@ -31,16 +32,13 @@ class _SendScreenState extends State<SendScreen> {
 
   void startDiscovery() async {
     try {
-      await Nearby().startDiscovery(
-        Provider.of<User>(context, listen: false).nickName,
-        Strategy.P2P_POINT_TO_POINT,
-        onEndpointFound: (String id, String nickName, String serviceId) {
-          Provider.of<Endpoints>(context, listen: false).addUser(id, nickName);
-        },
-        onEndpointLost: (String id) {
-          Provider.of<Endpoints>(context, listen: false).removeUser(id);
-        },
-      );
+      await Nearby()
+          .startDiscovery(getP<User>().nickName, Strategy.P2P_POINT_TO_POINT,
+              onEndpointFound: (String id, String nickName, String serviceId) {
+        getP<Endpoints>().addUser(id, nickName);
+      }, onEndpointLost: (String id) {
+        getP<Endpoints>().removeUser(id);
+      }, serviceId: serviceId);
     } catch (e) {
       // platform exceptions like unable to start bluetooth or insufficient permissions
       showDialog(
@@ -80,8 +78,7 @@ class _SendScreenState extends State<SendScreen> {
             RaisedButton(
               child: Text("Select Files"),
               onPressed: () async {
-                Provider.of<Files>(context, listen: false)
-                    .add(await FilePicker.getMultiFile());
+                getP<Files>().add(await FilePicker.getMultiFile());
               },
             ),
           ],
@@ -153,28 +150,7 @@ class _EndpointListViewState extends State<EndpointListView> {
             child: Text("${widget.endpoints.externalUsers[i].nickName}"),
             onPressed: () {
               // request connection to advertiser
-              Nearby().requestConnection(
-                  Provider.of<User>(context, listen: false).nickName,
-                  widget.endpoints.externalUsers[i].endpointId,
-                  onConnectionInitiated: (id, info) {
-                if (!info.isIncomingConnection) {
-                  Nearby().acceptConnection(id,
-                      onPayLoadRecieved: (endid, bytes) {},
-                      onPayloadTransferUpdate:
-                          (endid, payloadTransferUpdate) {});
-                }
-              }, onConnectionResult: (id, status) {
-                //send files to user..
-                if (status == Status.CONNECTED)
-                  Router.navigator.pushReplacementNamed(Router.transfer);
-                else
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Connection was Rejected"),
-                    ),
-                  );
-                startTransfer(id);
-              }, onDisconnected: (id) {});
+              requestConnection(i, context);
             },
           ),
         );
@@ -182,15 +158,30 @@ class _EndpointListViewState extends State<EndpointListView> {
     );
   }
 
-  void startTransfer(String id) async {
-    for (var file in Provider.of<Files>(context, listen: false).files) {
-      //send file
-      int payloadId = await Nearby().sendFilePayload(id, file.path);
-      //send filename along with payload id for identification
-      Nearby().sendBytesPayload(
-          id,
-          Uint8List.fromList(
-              "FILE:::$payloadId:::${file.path.split('/').last}".codeUnits));
-    }
+  void requestConnection(int i, BuildContext context) {
+    Nearby().requestConnection(
+      getP<User>().nickName,
+      widget.endpoints.externalUsers[i].endpointId,
+      onConnectionInitiated: (id, info) {
+        if (!info.isIncomingConnection) {
+          Nearby().acceptConnection(id,
+              onPayLoadRecieved: (endid, bytes) {},
+              onPayloadTransferUpdate: (endid, payloadTransferUpdate) {});
+        }
+      },
+      onConnectionResult: (id, status) {
+        //send files to user..
+        if (status == Status.CONNECTED) {
+          Router.navigator.pushReplacementNamed(Router.senderTransfer, arguments: id);
+        } else {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Connection was Rejected"),
+            ),
+          );
+        }
+      },
+      onDisconnected: (id) {},
+    );
   }
 }
