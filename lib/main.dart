@@ -5,19 +5,11 @@ import 'package:flutter_file_sharer/providers/endpoints.dart';
 import 'package:flutter_file_sharer/providers/files.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
 import 'package:flutter_file_sharer/routes.dart';
-import 'package:flutter_file_sharer/screens/home_screen.dart';
-import 'package:flutter_file_sharer/screens/receive_screen.dart';
-import 'package:flutter_file_sharer/screens/send_screen.dart';
-import 'package:flutter_file_sharer/screens/splash_screen.dart';
-import 'package:flutter_file_sharer/screens/transfer_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  MyApp();
-  MyApp.forDesignTime();
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -39,25 +31,8 @@ class MyApp extends StatelessWidget {
         ),
         navigatorKey: Router.navKey,
         initialRoute: Router.splash,
-        onGenerateRoute: routes,
+        onGenerateRoute: Router.routes,
       ),
     );
-  }
-
-  Route<dynamic> routes(RouteSettings s) {
-    switch (s.name) {
-      case Router.splash:
-        return MaterialPageRoute(builder: (_) => SplashScreen());
-      case Router.home:
-        return MaterialPageRoute(builder: (_) => HomeScreen());
-      case Router.send:
-        return MaterialPageRoute(builder: (_) => SendScreen());
-      case Router.receive:
-        return MaterialPageRoute(builder: (_) => ReceiveScreen());
-      case Router.transfer:
-        return MaterialPageRoute(builder: (_) => TransferScreen());
-      default:
-        return null;
-    }
   }
 }

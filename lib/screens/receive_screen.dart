@@ -47,6 +47,12 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                     RaisedButton(
                       child: Text("Allow"),
                       onPressed: () {
+                        Nearby().acceptConnection(id,
+                            onPayLoadRecieved: (endid, bytes) {},
+                            onPayloadTransferUpdate:
+                                (endid, payloadTransferUpdate) {});
+                        // connection was already accepted by sender so its
+                        // safe to directly go to transfer screen
                         Router.navigator.pushReplacementNamed(Router.transfer);
                       },
                     ),

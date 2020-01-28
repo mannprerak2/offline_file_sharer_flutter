@@ -111,14 +111,17 @@ class _SendScreenState extends State<SendScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text("Receivers Near You"),
-          content: Center(
-            child: Consumer<Endpoints>(
-              builder: (_, endpoints, __) {
-                if (endpoints.externalUsers.length < 1)
-                  return CircularProgressIndicator();
+          content: Container(
+            width: double.maxFinite,
+            child: Center(
+              child: Consumer<Endpoints>(
+                builder: (_, endpoints, __) {
+                  if (endpoints.externalUsers.length < 1)
+                    return CircularProgressIndicator();
 
-                return EndpointListView(endpoints);
-              },
+                  return EndpointListView(endpoints);
+                },
+              ),
             ),
           ),
         );
@@ -162,7 +165,14 @@ class _EndpointListViewState extends State<EndpointListView> {
                 }
               }, onConnectionResult: (id, status) {
                 //send files to user..
-                Router.navigator.pushReplacementNamed(Router.transfer);
+                if (status == Status.CONNECTED)
+                  Router.navigator.pushReplacementNamed(Router.transfer);
+                else
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Connection was Rejected"),
+                    ),
+                  );
                 startTransfer(id);
               }, onDisconnected: (id) {});
             },
