@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_file_sharer/payload_handler.dart';
 import 'package:flutter_file_sharer/providers/endpoints.dart';
 import 'package:flutter_file_sharer/providers/files.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
@@ -164,15 +163,19 @@ class _EndpointListViewState extends State<EndpointListView> {
       widget.endpoints.externalUsers[i].endpointId,
       onConnectionInitiated: (id, info) {
         if (!info.isIncomingConnection) {
-          Nearby().acceptConnection(id,
-              onPayLoadRecieved: (endid, bytes) {},
-              onPayloadTransferUpdate: (endid, payloadTransferUpdate) {});
+          Nearby().acceptConnection(
+            id,
+            onPayLoadRecieved: null,
+            onPayloadTransferUpdate:
+                PayloadHandler().onPayloadTransferUpdateSender,
+          );
         }
       },
       onConnectionResult: (id, status) {
         //send files to user..
         if (status == Status.CONNECTED) {
-          Router.navigator.pushReplacementNamed(Router.senderTransfer, arguments: id);
+          Router.navigator
+              .pushReplacementNamed(Router.senderTransfer, arguments: id);
         } else {
           Scaffold.of(context).showSnackBar(
             SnackBar(

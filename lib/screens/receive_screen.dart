@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_sharer/payload_handler.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
 import 'package:flutter_file_sharer/global.dart';
 import 'package:nearby_connections/nearby_connections.dart';
-import 'package:provider/provider.dart';
 
 class ReceiveScreen extends StatefulWidget {
   @override
@@ -50,9 +50,10 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                       child: Text("Allow"),
                       onPressed: () {
                         Nearby().acceptConnection(id,
-                            onPayLoadRecieved: (endid, bytes) {},
-                            onPayloadTransferUpdate:
-                                (endid, payloadTransferUpdate) {});
+                            onPayLoadRecieved:
+                                PayloadHandler().onPayloadReceived,
+                            onPayloadTransferUpdate: PayloadHandler()
+                                .onPayloadTransferUpdateReceiver);
                         // connection was already accepted by sender so its
                         // safe to directly go to receiver_transfer_screen
                         Router.navigator

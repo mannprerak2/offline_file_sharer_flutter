@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_sharer/providers/endpoints.dart';
 import 'package:flutter_file_sharer/providers/files.dart';
+import 'package:flutter_file_sharer/providers/transfer.dart';
 import 'package:flutter_file_sharer/providers/user.dart';
 import 'package:flutter_file_sharer/global.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: Files(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Transfer(),
         ),
       ],
       child: MaterialApp(
