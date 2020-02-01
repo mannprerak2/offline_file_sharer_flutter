@@ -28,25 +28,24 @@ class _TransferElementTileState extends State<TransferElementTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Text(widget.element.name),
-                Icon(widget.element.progress == 0
-                    ? Icons.check_box_outline_blank
-                    : widget.element.progress < 1
-                        ? Icons.indeterminate_check_box
-                        : Icons.check_box)
-              ],
-            ),
-            LinearProgressIndicator(
-              value: widget.element.progress,
-            ),
-          ],
-        ),
+      margin: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Text(widget.element.name),
+              Icon(widget.element.progress == 0
+                  ? Icons.check_box_outline_blank
+                  : widget.element.progress < 1
+                      ? Icons.indeterminate_check_box
+                      : Icons.check_box)
+            ],
+          ),
+          LinearProgressIndicator(
+            value: widget.element.progress,
+          ),
+        ],
       ),
     );
   }

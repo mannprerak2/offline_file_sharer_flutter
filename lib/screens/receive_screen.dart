@@ -106,8 +106,11 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            CircularProgressIndicator(),
-            Text(advertising ? "Initialising" : "Waiting for a sender.."),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ),
+            Text(advertising ? "Waiting for a sender..." : "Initialising"),
           ],
         ),
       ),

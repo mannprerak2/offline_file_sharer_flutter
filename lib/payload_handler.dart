@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_file_sharer/providers/transfer.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:flutter_file_sharer/global.dart';
@@ -27,6 +29,14 @@ class PayloadHandler {
         getP<Transfer>().mappedElements[int.parse(data[1])] = getP<Transfer>()
             .transferElements
             .firstWhere((e) => data[2] == e.name);
+        // set flag to 1 or increment it by 1
+        getP<Transfer>().flagForElement[int.parse(data[1])] =
+            (getP<Transfer>().flagForElement[int.parse(data[1])] ?? 0) + 1;
+
+        if (getP<Transfer>().flagForElement[int.parse(data[1])] > 1) {
+          // rename this file
+          renamePayload(int.parse(data[1]));
+        }
       } else if (data[0] == "META") {
         for (int i = 1; i < data.length; i += 2) {
           getP<Transfer>().addWithNoNotification(
@@ -38,6 +48,13 @@ class PayloadHandler {
       }
     } else {
       // file payload
+
+      // set flag to 1 or increment it by 1 for knowing when to rename
+      getP<Transfer>().flagForElement[payload.id] =
+          (getP<Transfer>().flagForElement[payload.id] ?? 0) + 1;
+
+      // save file path for later use
+      getP<Transfer>().payloadFilePaths[payload.id] = payload.filePath;
     }
   }
 
@@ -48,6 +65,13 @@ class PayloadHandler {
     getP<Transfer>().mappedElements[ptu.id]?.progress =
         (ptu.bytesTransferred / ptu.totalBytes);
     getP<Transfer>().mappedElements[ptu.id]?.status = ptu.status;
+
+    if (ptu.status == PayloadStatus.SUCCESS &&
+        getP<Transfer>().flagForElement.containsKey(ptu.id) &&
+        getP<Transfer>().flagForElement[ptu.id] > 1) {
+      // rename this file
+      renamePayload(ptu.id);
+    }
   }
 
   void onPayloadTransferUpdateSender(
@@ -57,5 +81,16 @@ class PayloadHandler {
     getP<Transfer>().mappedElements[ptu.id]?.progress =
         (ptu.bytesTransferred / ptu.totalBytes);
     getP<Transfer>().mappedElements[ptu.id]?.status = ptu.status;
+  }
+
+  void renamePayload(int id) async {
+    try {
+      File file = File(getP<Transfer>().payloadFilePaths[id]);
+      File f = await file.rename(
+          file.parent.path + "/" + getP<Transfer>().mappedElements[id].name);
+      getP<Transfer>().mappedElements[id].finalFilePath = f.path;
+    } catch (e) {
+      print(e);
+    }
   }
 }
