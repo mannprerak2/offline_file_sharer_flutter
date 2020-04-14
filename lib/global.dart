@@ -6,6 +6,7 @@ import 'package:flutter_file_sharer/screens/send_screen.dart';
 import 'package:flutter_file_sharer/screens/splash_screen.dart';
 import 'package:flutter_file_sharer/screens/sender_transfer_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Router {
   /// starting screen
@@ -39,11 +40,21 @@ class Router {
         return MaterialPageRoute(
             builder: (_) => SenderTransferScreen(s.arguments as String));
       case Router.receiverTransfer:
-        return MaterialPageRoute(
-            builder: (_) => ReceiverTransferScreen());
+        return MaterialPageRoute(builder: (_) => ReceiverTransferScreen());
       default:
         return null;
     }
+  }
+}
+
+class Prefs {
+  static const String nickName = 'nickname';
+  static SharedPreferences preferences;
+
+  /// use this to also set static preferences variable in global.dart
+  static Future<SharedPreferences> getPrefs() async {
+    preferences = await SharedPreferences.getInstance();
+    return preferences;
   }
 }
 

@@ -90,8 +90,9 @@ class UserNameWidget extends StatelessWidget {
                   ),
                   onPressed: () {
                     if (t.text.trim().isNotEmpty) {
-                      getP<User>().nickName =
-                          t.text.trim();
+                      getP<User>().nickName = t.text.trim();
+                      Prefs.preferences
+                          .setString(Prefs.nickName, t.text.trim());
                       Router.navigator.pop(); // pop alertdialog
                     }
                   },

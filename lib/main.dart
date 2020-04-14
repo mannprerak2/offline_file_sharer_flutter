@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: User("User_" + Random().nextInt(1000).toString()),
+          value: User(""),
         ),
         ChangeNotifierProvider.value(
           value: Endpoints(),
